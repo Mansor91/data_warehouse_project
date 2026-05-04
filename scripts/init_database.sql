@@ -3,40 +3,40 @@
 Create Database and Schemas
 =============================================================
 Script Purpose:
-    This script creates a new database named 'DataWarehouse' after checking if it already exists. 
-    If the database exists, it is dropped and recreated. Additionally, the script sets up three schemas 
-    within the database: 'bronze', 'silver', and 'gold'.
-	
+    This script creates a new database named 'DataWarehouse'
+    after checking if it already exists. If the database
+    exists, it is dropped and recreated. Additionally, the
+    script sets up three schemas within the database:
+    'bronze', 'silver', and 'gold'.
+
 WARNING:
-    Running this script will drop the entire 'DataWarehouse' database if it exists. 
-    All data in the database will be permanently deleted. Proceed with caution 
-    and ensure you have proper backups before running this script.
+    Running this script will drop the entire 'DataWarehouse'
+    database if it exists. All data in the database will be
+    permanently deleted. Proceed with caution and ensure you
+    have proper backups before running this script.
+=============================================================
 */
 
-USE master;
-GO
+-- Step 1: Run this block connected to the 'postgres' database
 
--- Drop and recreate the 'DataWarehouse' database
-IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'DataWarehouse')
-BEGIN
-    ALTER DATABASE DataWarehouse SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE DataWarehouse;
-END;
-GO
+-- Terminate all active connections to 'DataWarehouse'
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = 'DataWarehouse';
+
+-- Drop the database if it exists
+DROP DATABASE IF EXISTS "DataWarehouse";
 
 -- Create the 'DataWarehouse' database
-CREATE DATABASE DataWarehouse;
-GO
+CREATE DATABASE "DataWarehouse"
+    OWNER = dwh_user
+    ENCODING = 'UTF8';
 
-USE DataWarehouse;
-GO
+-- ============================================================
+-- Step 2: Reconnect to 'DataWarehouse' then run the block below
+-- ============================================================
 
 -- Create Schemas
-CREATE SCHEMA bronze;
-GO
-
-CREATE SCHEMA silver;
-GO
-
-CREATE SCHEMA gold;
-GO
+CREATE SCHEMA IF NOT EXISTS bronze;
+CREATE SCHEMA IF NOT EXISTS silver;
+CREATE SCHEMA IF NOT EXISTS gold;
