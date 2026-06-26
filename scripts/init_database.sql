@@ -27,6 +27,9 @@ WHERE datname = 'DataWarehouse';
 -- Drop the database if it exists
 DROP DATABASE IF EXISTS "DataWarehouse";
 
+-- Create a new role for the DataWarehouse user (The passwords will be handled im a .env file)
+CREATE ROLE dwh_user WITH LOGIN PASSWORD 'your_password';
+
 -- Create the 'DataWarehouse' database
 CREATE DATABASE "DataWarehouse"
     OWNER = dwh_user
